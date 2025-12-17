@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>エロタイプ診断（地下版）</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background: #ff2f92;
+      color: #fff;
+    }
+    .result {
+      margin-top: 40px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>エロタイプ診断</h1>
+  <p>深く考えずに押してください</p>
+
+  <button onclick="showResult()">診断する</button>
+
+  <div class="result" id="result"></div>
+  <div class="note">※この結果は編集部の主観です</div>
+
+  <script>
+    const results = [
+      "やりすてドラゴン",
+      "なかだしキャット",
+      "もっこりウナギ",
+      "イマラチオオカミ",
+      "たねづけパンダ",
+      "レイプライオン",
+      "カウパーコアラ",
+      "夢精ペガサス",
+      "マンコヘラクレス",
+      "絶倫タヌキ"
+    ];
+
+    function showResult() {
+      const r = results[Math.floor(Math.random() * results.length)];
+      document.getElementById("result").innerText = r;
+    }
+  </script>
+
+</body>
+</html>
