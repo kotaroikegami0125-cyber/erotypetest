@@ -2,65 +2,275 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>エロタイプ診断（地下版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>エロタイプ診断</title>
   <style>
+    :root {
+      --bg:#111; --fg:#fff; --accent:#ff2f92; --muted:#aaa;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: #fff;
-      text-align: center;
-      padding: 40px;
+      margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:var(--bg); color:var(--fg);
     }
-    button {
-      padding: 14px 28px;
-      font-size: 18px;
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      background: #ff2f92;
-      color: #fff;
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px; }
+    h1,h2 { margin: 0 0 12px; }
+    p { color: var(--muted); }
+    .card {
+      background:#181818; border-radius:12px; padding:20px; margin:16px 0;
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
     }
-    .result {
-      margin-top: 40px;
-      font-size: 28px;
-      font-weight: bold;
+    .btn {
+      display:inline-block; width:100%; margin:8px 0; padding:14px 16px;
+      border-radius:10px; border:none; cursor:pointer;
+      background:var(--accent); color:#fff; font-size:16px; font-weight:600;
     }
-    .note {
-      margin-top: 12px;
-      font-size: 14px;
-      opacity: 0.6;
+    .btn.secondary { background:#2a2a2a; }
+    .options .btn { background:#2a2a2a; }
+    .options .btn:hover { background:#333; }
+    .img {
+      width:100%; border-radius:12px; overflow:hidden; margin:12px 0;
+      background:#000;
     }
+    .img img { width:100%; display:block; }
+    .result-name { font-size:28px; font-weight:800; margin-top:8px; }
+    .share {
+      display:flex; gap:10px; margin-top:12px;
+    }
+    .share a, .share button {
+      flex:1; text-align:center; padding:12px; border-radius:10px;
+      background:#2a2a2a; color:#fff; text-decoration:none; border:none; cursor:pointer;
+    }
+    .note { font-size:12px; color:#888; margin-top:8px; }
+    .progress { color:#888; font-size:12px; margin-bottom:8px; }
+    footer { text-align:center; color:#666; font-size:12px; margin-top:24px; }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div id="app"></div>
+    <footer>※この診断はエンタメ目的です</footer>
+  </div>
 
-  <h1>エロタイプ診断</h1>
-  <p>深く考えずに押してください</p>
+<script>
+/* -----------------------
+   データ定義
+------------------------*/
 
-  <button onclick="showResult()">診断する</button>
+// 質問（3問）
+const questions = [
+  {
+    id: 1,
+    text: "ゴムをつけるのはどっちの手？",
+    options: [
+      { label: "利き手", tag: "aggressive", next: 2 },
+      { label: "つけない", tag: "passive", next: 2 }
+    ]
+  },
+  {
+    id: 2,
+    text: "性欲が強い？",
+    options: [
+      { label: "ウサギくらい強い", tag: "instinct", next: 3 },
+      { label: "ブラックマジシャンくらい強い", tag: "logic", next: 3 }
+    ]
+  },
+  {
+    id: 3,
+    text: "ピロートークで大事なのは？",
+    options: [
+      { label: "ラジオ", tag: "distance", next: "result" },
+      { label: "すぐ帰る", tag: "moment", next: "result" }
+    ]
+  }
+];
 
-  <div class="result" id="result"></div>
-  <div class="note">※この結果は編集部の主観です</div>
+// 結果（10タイプ／仮画像1枚）
+const results = {
+  dragon: {
+    name: "やりすてドラゴン",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「やりすてドラゴン」でした"
+  },
+  cat: {
+    name: "なかだしキャット",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「なかだしキャット」でした"
+  },
+  eel: {
+    name: "もっこりウナギ",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「もっこりウナギ」でした"
+  },
+  wolf: {
+    name: "イマラチオオカミ",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「イマラチオオカミ」でした"
+  },
+  phoenix: {
+    name: "種付けパンダ",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「種付けパンダ」でした"
+  },
+  god: {
+    name: "レイプライオン",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「レイプライオン」でした"
+  },
+  oni: {
+    name: "カウパーコアラ",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「カウパーコアラ」でした"
+  },
+  concept: {
+    name: "夢精ペガサス",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「夢精ペガサス」でした"
+  },
+  cat2: {
+    name: "マンコヘラクレス",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「マンコヘラクレス」でした"
+  },
+  angel: {
+    name: "絶倫タヌキ",
+    image: "assets/placeholder.png",
+    description: "※後で作成",
+    shareText: "私は「絶倫タヌキ」でした"
+  }
+};
 
-  <script>
-    const results = [
-      "やりすてドラゴン",
-      "なかだしキャット",
-      "もっこりウナギ",
-      "イマラチオオカミ",
-      "たねづけパンダ",
-      "レイプライオン",
-      "カウパーコアラ",
-      "夢精ペガサス",
-      "マンコヘラクレス",
-      "絶倫タヌキ"
-    ];
+// タグ→結果の簡易マッピング（雑でOK）
+const tagToResult = {
+  aggressive: ["dragon","wolf","cat2"],
+  passive: ["cat","angel","concept"],
+  instinct: ["eel","phoenix","dragon"],
+  logic: ["god","oni","concept"],
+  distance: ["angel","god","oni"],
+  moment: ["dragon","wolf","eel"]
+};
 
-    function showResult() {
-      const r = results[Math.floor(Math.random() * results.length)];
-      document.getElementById("result").innerText = r;
-    }
-  </script>
+/* -----------------------
+   状態管理
+------------------------*/
+let state = {
+  screen: "home", // home | quiz | result
+  qid: 1,
+  tags: [],
+  resultKey: null
+};
 
+const app = document.getElementById("app");
+
+/* -----------------------
+   レンダリング
+------------------------*/
+function render() {
+  if (state.screen === "home") return renderHome();
+  if (state.screen === "quiz") return renderQuiz();
+  if (state.screen === "result") return renderResult();
+}
+
+function renderHome() {
+  app.innerHTML = `
+    <div class="card">
+      <h1>エロタイプ診断</h1>
+      <p>3つの質問に答えるだけで、あなたのタイプを診断します。</p>
+      <button class="btn" onclick="startQuiz()">診断を始める</button>
+      <div class="note">※結果はエンタメとしてお楽しみください</div>
+    </div>
+  `;
+}
+
+function renderQuiz() {
+  const q = questions.find(x => x.id === state.qid);
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress">Q${q.id} / ${questions.length}</div>
+      <h2>${q.text}</h2>
+      <div class="options">
+        ${q.options.map(o => `
+          <button class="btn secondary" onclick="answer('${o.tag}', '${o.next}')">${o.label}</button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderResult() {
+  const r = results[state.resultKey];
+  const shareUrl = encodeURIComponent(location.href);
+  const shareText = encodeURIComponent(r.shareText);
+  const twitter = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+
+  app.innerHTML = `
+    <div class="card">
+      <h2>診断結果</h2>
+      <div class="img"><img src="${r.image}" alt=""></div>
+      <div class="result-name">${r.name}</div>
+      <p>${r.description}</p>
+      <div class="share">
+        <a href="${twitter}" target="_blank">Xでシェア</a>
+        <button onclick="copyText('${r.shareText}')">結果をコピー</button>
+      </div>
+      <button class="btn" onclick="restart()">もう一度診断</button>
+      <div class="note">※この名前は編集部の主観です</div>
+    </div>
+  `;
+}
+
+/* -----------------------
+   ロジック
+------------------------*/
+function startQuiz() {
+  state.screen = "quiz";
+  state.qid = 1;
+  state.tags = [];
+  render();
+}
+
+function answer(tag, next) {
+  state.tags.push(tag);
+  if (next === "result") {
+    state.resultKey = decideResult(state.tags);
+    state.screen = "result";
+  } else {
+    state.qid = Number(next);
+  }
+  render();
+}
+
+function decideResult(tags) {
+  // タグに紐づく候補からランダム（雑でOK）
+  const pool = [];
+  tags.forEach(t => {
+    (tagToResult[t] || []).forEach(k => pool.push(k));
+  });
+  const keys = pool.length ? pool : Object.keys(results);
+  return keys[Math.floor(Math.random() * keys.length)];
+}
+
+function restart() {
+  state.screen = "home";
+  render();
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text);
+  alert("コピーしました");
+}
+
+// 初期表示
+render();
+</script>
 </body>
 </html>
