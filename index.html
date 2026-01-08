@@ -63,7 +63,7 @@ const questions = [
     id: 1,
     text: "ゴムをつけるのはどっちの手？",
     options: [
-      { label: "利き手", tag: "aggressive", next: 2 },
+      { label: "口", tag: "aggressive", next: 2 },
       { label: "つけない", tag: "passive", next: 2 }
     ]
   },
@@ -72,7 +72,7 @@ const questions = [
     text: "性欲が強い？",
     options: [
       { label: "ウサギくらい強い", tag: "instinct", next: 3 },
-      { label: "ブラックマジシャンくらい強い", tag: "logic", next: 3 }
+      { label: "ブラックマ●シャンくらい強い", tag: "logic", next: 3 }
     ]
   },
   {
@@ -87,10 +87,25 @@ const questions = [
 
 // 結果（10タイプ／仮画像1枚）
 const results = {
+  bear: {
+    name: "淫乱テディベア",
+    image: "assets/inrantedi.png",
+    description: `
+    子供に癒しを与える存在のはずだったが、持ち主が大きくなって捨てられたことがトラウマに。
+    捨てられないために、今日もテディは淫乱になる。
+    `
+    ,
+    shareText: "私は「やりすてドラゴン」でした"
+  },
   dragon: {
     name: "やりすてドラゴン",
-    image: "assets/placeholder.png",
-    description: "※後で作成",
+    image: "assets/yarisutedoragon.png",
+    description: `
+    手も、出すのも、着替えるのも、帰るのも早い
+    一瞬でやり捨てて消えるので、夢だったのかもと思っちゃう。
+    さすが、伝説の生き物だね。
+    `
+    ,
     shareText: "私は「やりすてドラゴン」でした"
   },
   cat: {
@@ -117,10 +132,10 @@ const results = {
     shareText: "私は「もっこりウナギ」でした"
   },
   wolf: {
-    name: "イマラチオオカミ",
+    name: "イラマチオオカミ",
     image: "assets/imarachiookami.png",
     description: "※後で作成",
-    shareText: "私は「イマラチオオカミ」でした"
+    shareText: "私は「イラマチオオカミ」でした"
   },
   phoenix: {
     name: "種付けパンダ",
@@ -156,8 +171,11 @@ const results = {
   },
   cat2: {
     name: "マンコヘラクレス",
-    image: "assets/placeholder.png",
-    description: "※後で作成",
+    image: "assets/mankoherakuresu.png",
+    description: `
+    ダーウィンが生物の進化で一番驚いたらしい
+    `
+    ,
     shareText: "私は「マンコヘラクレス」でした"
   },
   angel: {
